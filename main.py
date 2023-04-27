@@ -10,19 +10,19 @@ def print_table(column_names, table):
     i = 0
     for column in column_names:
         if i == len(column_names)- 1:
-            print(column[0])
+            print(column[0], end="")
         else:
             print(column[0], end=", ")
 
         i += 1
-
+    print()
     for row in table:
         i = 0
         for col in row:
             if i == len(row)- 1:
                 print(col, end="")
             else:
-                print(col, end=",")
+                print(col, end=", ")
             i += 1
         print()
 
@@ -52,14 +52,14 @@ def show_table():
         if table_choice == "q":
             done = True
         elif not contains:
-            print("invalid table choice")
+            print("Invalid table choice")
             continue
         else:
             # user entered valid table name
             curr_table = conn.execute("SELECT * FROM " + table_choice)
             print_table(curr_table.description, curr_table)
             print()
-            if not input("press enter to exit"):
+            if not input("Press enter to exit"):
                 done = True
 
 
@@ -237,16 +237,26 @@ def update_entry():
             pktable = pk_table.fetchall()
             pk_string = pktable[0][0]
             print()
-            print("The primary key column is:" + pk_string)
+            print("The primary key column is: " + pk_string)
 
             # print the table they chose
             print_table(table_cols, curr_table)
 
             print()
-            print("Please enter the PrimaryKey of the row you would like to update:")
-            key_in = input()
+            print("Please enter the column name you want to update")
+            col_name = input()
+            print("Please enter the value you would like to change the column to")
+            update_val = input()
+            print("Please enter condition to change")
+            condition = input()
 
-
+            try:
+                curr = conn.execute("UPDATE " + table_choice + " SET " + col_name + "='"
+                                    + update_val + "'WHERE " + condition)
+                done = True
+                conn.commit()
+            except:
+                print("update did not work")
 
 
 
@@ -263,12 +273,12 @@ print()
 done = False
 
 while not done:
-    print("1. Insert row")
-    print("2. Show table")
-    print("3. Update an entry")
-    print("4. Delete a row")
+    print("1. Insert Row")
+    print("2. Show Table")
+    print("3. Update An Entry")
+    print("4. Delete A Row")
     print("5. Other")
-    print("q. quit")
+    print("q. Quit")
 
     user_in = input()
 
