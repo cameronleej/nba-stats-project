@@ -199,7 +199,52 @@ def delete_entry():
                 print("deletion did not work")
 
 
+def update_entry():
+    # this will retrieve all of the table names in the db
+    cursor = conn.execute("SELECT tbl_name FROM sqlite_master WHERE type = 'table'")
 
+    table_names = cursor.fetchall()
+    col_name = cursor.description
+    print_table(col_name, table_names)
+
+    # getting the primary key from the table
+    done = False
+
+    while not done:
+        print("Choose a table to update from in the list above (q to exit):")
+        table_choice = str(input().strip())
+        contains = False
+
+        # checks to see if the name entered is a valid table name in db
+        for row in table_names:
+            for col in row:
+                if col == table_choice:
+                    contains = True
+                    break
+
+        if table_choice == "q":
+            done = True
+        elif not contains:
+            print("invalid table choice")
+            continue
+        else:
+            # user entered valid table name
+            curr_table = conn.execute("SELECT * FROM " + table_choice)
+            table_cols = curr_table.description
+
+            # get the primary key of the table as one row, one col
+            pk_table = conn.execute("SELECT l.name FROM pragma_table_info(\"" + table_choice + "\") as l WHERE l.pk = 1;")
+            pktable = pk_table.fetchall()
+            pk_string = pktable[0][0]
+            print()
+            print("The primary key column is:" + pk_string)
+
+            # print the table they chose
+            print_table(table_cols, curr_table)
+
+            print()
+            print("Please enter the PrimaryKey of the row you would like to update:")
+            key_in = input()
 
 
 
@@ -232,7 +277,7 @@ while not done:
     elif user_in == "2":
         show_table()
     elif user_in == "3":
-        print()
+        update_entry()
     elif user_in == "4":
         delete_entry()
     elif user_in == "5":
@@ -245,8 +290,4 @@ while not done:
 
 # close the connection
 conn.close()
-
-
-
-
 
