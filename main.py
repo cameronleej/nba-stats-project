@@ -1,7 +1,4 @@
 import sqlite3
-from tkinter import *
-import tkinter
-import os
 
 
 # used to input a given table, and print out the rows and columns
@@ -40,6 +37,7 @@ def print_table(column_names, table):
     print("-" * 30 * len(column_names))
     print()
 
+
 def show_table():
     # this will retrieve all of the table names in the db
 
@@ -74,8 +72,6 @@ def show_table():
             print()
             if not input("Press enter to exit"):
                 done = True
-
-
 
 
 def insert_row():
@@ -275,6 +271,58 @@ def update_entry():
                 print("update did not work")
 
 
+def retrieval(statement):
+    cursor = conn.execute(statement)
+    table_names = cursor.fetchall()
+    col_name = cursor.description
+    print_table(col_name, table_names)
+
+
+def other():
+    global statement
+    selected = False
+
+    while not selected:
+        print("1. View wins and losses of players")
+        print("2. View wins by division")
+        print("3. View a team's 3 point average")
+        print("4. View all players correlated to all teams")
+        print("5. View colleges that a player went to")
+        print("6. View cities that have both a college and NBA team")
+        print("q. Quit\n")
+
+        user_in = input("Enter your selection: ")
+        print()
+        if user_in == "1":
+            statement = "SELECT Player.Player_Name, Team.Wins, Team.Losses FROM Player " \
+                        "INNER JOIN Team ON Player.Team_Name = Team.Team_Name"
+
+        elif user_in == "2":
+            division = input("Enter the division: ")
+            statement = "SELECT Division.Division_Name, SUM(t1.Wins) FROM Division INNER JOIN Team as t1 " \
+                        "ON t1.Division_Name = Division.Division_Name WHERE t1.Division_Name = '" + division + "' GROUP BY Division.Division_Name"
+
+        elif user_in == "3":
+            team = input("Enter the team: ")
+            statement = "SELECT Player.Team_Name, AVG(Three_Point_Average) FROM Team " \
+                        "INNER JOIN Player ON Player.Team_Name = '" + team + "'"
+
+        elif user_in == "4":
+            statement = "SELECT Player.Player_Name, Team.Team_Name FROM Player CROSS JOIN Team"
+
+        elif user_in == "5":
+            statement = "SELECT College_Name FROM College INTERSECT SELECT College_Name FROM WENT_TO"
+
+        elif user_in == "6":
+            statement = "SELECT Location FROM College INTERSECT SELECT Location FROM Team"
+
+        elif user_in == "q":
+            selected = True
+        else:
+            print("Invalid selection\n")
+            continue
+        retrieval(statement)
+
 # create a connection to the database
 
 conn = sqlite3.connect('nbastats.sl3', timeout=10)
@@ -306,8 +354,7 @@ while not done:
     elif user_in == "4":
         delete_entry()
     elif user_in == "5":
-        print("Chose 5")
-
+        other()
     elif user_in == "q":
         done = True
     else:
