@@ -200,8 +200,6 @@ def delete_entry():
             print("Please enter the Primary Key of the row you would like to delete:")
             key_in = input()
 
-            # TODO: ADD DATA VALIDATION HERE
-
             try:
                 curr = conn.execute("DELETE FROM " + table_choice + " WHERE " + pk_string + " = \'" + key_in + "\'")
                 done = True
@@ -296,32 +294,32 @@ def other():
         if user_in == "1":
             statement = "SELECT Player.Player_Name, Team.Wins, Team.Losses FROM Player " \
                         "INNER JOIN Team ON Player.Team_Name = Team.Team_Name"
-
+            retrieval(statement)
         elif user_in == "2":
             division = input("Enter the division: ")
             statement = "SELECT Division.Division_Name, SUM(t1.Wins) FROM Division INNER JOIN Team as t1 " \
                         "ON t1.Division_Name = Division.Division_Name WHERE t1.Division_Name = '" + division + "' GROUP BY Division.Division_Name"
-
+            retrieval(statement)
         elif user_in == "3":
             team = input("Enter the team: ")
             statement = "SELECT Player.Team_Name, AVG(Three_Point_Average) FROM Team " \
                         "INNER JOIN Player ON Player.Team_Name = '" + team + "'"
-
+            retrieval(statement)
         elif user_in == "4":
             statement = "SELECT Player.Player_Name, Team.Team_Name FROM Player CROSS JOIN Team"
-
+            retrieval(statement)
         elif user_in == "5":
             statement = "SELECT College_Name FROM College INTERSECT SELECT College_Name FROM WENT_TO"
-
+            retrieval(statement)
         elif user_in == "6":
             statement = "SELECT Location FROM College INTERSECT SELECT Location FROM Team"
-
+            retrieval(statement)
         elif user_in == "q":
             selected = True
         else:
             print("Invalid selection\n")
             continue
-        retrieval(statement)
+
 
 # create a connection to the database
 
